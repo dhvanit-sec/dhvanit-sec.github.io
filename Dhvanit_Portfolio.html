@@ -1,0 +1,1121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dhvanit Parikh | Cybersecurity Portfolio</title>
+<link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Orbitron:wght@400;700;900&family=Rajdhani:wght@300;400;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --cyan: #00f5ff;
+    --green: #00ff88;
+    --purple: #bf00ff;
+    --orange: #ff6b00;
+    --red: #ff003c;
+    --dark: #020812;
+    --darker: #010508;
+    --glass: rgba(0, 245, 255, 0.05);
+    --glass-border: rgba(0, 245, 255, 0.15);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--dark);
+    color: #c8e8f0;
+    font-family: 'Rajdhani', sans-serif;
+    overflow-x: hidden;
+    cursor: none;
+  }
+
+  /* CUSTOM CURSOR */
+  .cursor {
+    width: 20px; height: 20px;
+    border: 2px solid var(--cyan);
+    border-radius: 50%;
+    position: fixed;
+    pointer-events: none;
+    z-index: 9999;
+    transition: transform 0.1s, background 0.2s;
+    mix-blend-mode: screen;
+  }
+  .cursor-dot {
+    width: 6px; height: 6px;
+    background: var(--cyan);
+    border-radius: 50%;
+    position: fixed;
+    pointer-events: none;
+    z-index: 9999;
+    transition: transform 0.05s;
+  }
+  .cursor.hover { transform: scale(2.5); background: rgba(0,245,255,0.1); }
+
+  /* MATRIX RAIN CANVAS */
+  #matrix-canvas {
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    opacity: 0.04;
+    z-index: 0;
+    pointer-events: none;
+  }
+
+  /* GRID OVERLAY */
+  .grid-overlay {
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    background-image:
+      linear-gradient(rgba(0,245,255,0.03) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(0,245,255,0.03) 1px, transparent 1px);
+    background-size: 60px 60px;
+    z-index: 0;
+    pointer-events: none;
+  }
+
+  /* NAV */
+  nav {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 100;
+    padding: 20px 40px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: rgba(2, 8, 18, 0.85);
+    backdrop-filter: blur(20px);
+    border-bottom: 1px solid var(--glass-border);
+  }
+
+  .nav-logo {
+    font-family: 'Orbitron', monospace;
+    font-size: 1.2rem;
+    font-weight: 900;
+    color: var(--cyan);
+    letter-spacing: 3px;
+    text-shadow: 0 0 20px var(--cyan);
+  }
+
+  .nav-links { display: flex; gap: 30px; }
+  .nav-links a {
+    color: #7ab8c8;
+    text-decoration: none;
+    font-size: 0.9rem;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    transition: color 0.3s;
+    font-weight: 600;
+  }
+  .nav-links a:hover { color: var(--cyan); text-shadow: 0 0 10px var(--cyan); }
+
+  /* HERO */
+  .hero {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    z-index: 1;
+    padding: 0 40px;
+  }
+
+  .hero-content { text-align: center; max-width: 900px; }
+
+  .hero-tag {
+    font-family: 'Share Tech Mono', monospace;
+    color: var(--green);
+    font-size: 0.9rem;
+    letter-spacing: 4px;
+    margin-bottom: 20px;
+    opacity: 0;
+    animation: fadeUp 0.8s 0.3s forwards;
+  }
+
+  .hero-name {
+    font-family: 'Orbitron', monospace;
+    font-size: clamp(2.5rem, 8vw, 6rem);
+    font-weight: 900;
+    line-height: 1;
+    margin-bottom: 20px;
+    opacity: 0;
+    animation: fadeUp 0.8s 0.5s forwards;
+  }
+
+  .hero-name .first { color: #fff; }
+  .hero-name .last {
+    color: var(--cyan);
+    text-shadow: 0 0 40px var(--cyan), 0 0 80px rgba(0,245,255,0.3);
+  }
+
+  .hero-title {
+    font-size: 1.3rem;
+    color: #7ab8c8;
+    letter-spacing: 4px;
+    text-transform: uppercase;
+    margin-bottom: 30px;
+    opacity: 0;
+    animation: fadeUp 0.8s 0.7s forwards;
+    font-weight: 600;
+  }
+
+  .hero-title span {
+    color: var(--cyan);
+    padding: 0 10px;
+    opacity: 0.6;
+  }
+
+  .hero-badge {
+    display: inline-block;
+    background: linear-gradient(135deg, rgba(0,255,136,0.1), rgba(0,245,255,0.1));
+    border: 1px solid var(--green);
+    color: var(--green);
+    padding: 8px 24px;
+    border-radius: 30px;
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 0.85rem;
+    letter-spacing: 2px;
+    margin-bottom: 40px;
+    opacity: 0;
+    animation: fadeUp 0.8s 0.9s forwards;
+    box-shadow: 0 0 20px rgba(0,255,136,0.2);
+  }
+
+  .hero-btns {
+    display: flex;
+    gap: 20px;
+    justify-content: center;
+    flex-wrap: wrap;
+    opacity: 0;
+    animation: fadeUp 0.8s 1.1s forwards;
+  }
+
+  .btn-primary {
+    background: linear-gradient(135deg, var(--cyan), var(--purple));
+    color: #000;
+    padding: 14px 35px;
+    border-radius: 4px;
+    text-decoration: none;
+    font-weight: 700;
+    font-size: 0.95rem;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    transition: all 0.3s;
+    position: relative;
+    overflow: hidden;
+  }
+  .btn-primary::before {
+    content: '';
+    position: absolute;
+    top: 0; left: -100%;
+    width: 100%; height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+    transition: left 0.4s;
+  }
+  .btn-primary:hover::before { left: 100%; }
+  .btn-primary:hover { transform: translateY(-3px); box-shadow: 0 10px 30px rgba(0,245,255,0.4); }
+
+  .btn-secondary {
+    border: 1px solid var(--cyan);
+    color: var(--cyan);
+    padding: 14px 35px;
+    border-radius: 4px;
+    text-decoration: none;
+    font-weight: 700;
+    font-size: 0.95rem;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    transition: all 0.3s;
+    background: transparent;
+  }
+  .btn-secondary:hover {
+    background: rgba(0,245,255,0.1);
+    transform: translateY(-3px);
+    box-shadow: 0 10px 30px rgba(0,245,255,0.2);
+  }
+
+  /* SCROLL INDICATOR */
+  .scroll-indicator {
+    position: absolute;
+    bottom: 40px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    opacity: 0;
+    animation: fadeIn 1s 2s forwards;
+  }
+  .scroll-indicator span {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 0.7rem;
+    letter-spacing: 3px;
+    color: #456070;
+  }
+  .scroll-line {
+    width: 1px; height: 50px;
+    background: linear-gradient(to bottom, var(--cyan), transparent);
+    animation: scrollPulse 2s infinite;
+  }
+
+  /* SECTIONS */
+  section {
+    position: relative;
+    z-index: 1;
+    padding: 100px 40px;
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+
+  .section-header {
+    margin-bottom: 60px;
+    display: flex;
+    align-items: center;
+    gap: 20px;
+  }
+
+  .section-num {
+    font-family: 'Orbitron', monospace;
+    font-size: 0.8rem;
+    color: var(--cyan);
+    opacity: 0.5;
+    letter-spacing: 3px;
+  }
+
+  .section-title {
+    font-family: 'Orbitron', monospace;
+    font-size: clamp(1.5rem, 4vw, 2.5rem);
+    font-weight: 700;
+    color: #fff;
+  }
+
+  .section-title .accent { color: var(--cyan); }
+
+  .section-line {
+    flex: 1;
+    height: 1px;
+    background: linear-gradient(to right, var(--glass-border), transparent);
+  }
+
+  /* ABOUT */
+  .about-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 60px;
+    align-items: start;
+  }
+
+  .about-text p {
+    color: #8ab0c0;
+    line-height: 1.9;
+    font-size: 1.05rem;
+    margin-bottom: 20px;
+  }
+
+  .about-text p strong { color: var(--cyan); }
+
+  .about-stats {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+  }
+
+  .stat-card {
+    background: var(--glass);
+    border: 1px solid var(--glass-border);
+    border-radius: 8px;
+    padding: 24px;
+    text-align: center;
+    transition: all 0.3s;
+    position: relative;
+    overflow: hidden;
+  }
+  .stat-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, var(--cyan), var(--purple));
+  }
+  .stat-card:hover {
+    border-color: var(--cyan);
+    transform: translateY(-5px);
+    box-shadow: 0 20px 40px rgba(0,245,255,0.1);
+  }
+  .stat-num {
+    font-family: 'Orbitron', monospace;
+    font-size: 2.5rem;
+    font-weight: 900;
+    color: var(--cyan);
+    text-shadow: 0 0 20px var(--cyan);
+  }
+  .stat-label {
+    font-size: 0.8rem;
+    letter-spacing: 2px;
+    color: #567888;
+    text-transform: uppercase;
+    margin-top: 5px;
+  }
+
+  /* SKILLS */
+  .skills-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 24px;
+  }
+
+  .skill-card {
+    background: var(--glass);
+    border: 1px solid var(--glass-border);
+    border-radius: 12px;
+    padding: 28px;
+    transition: all 0.4s;
+    position: relative;
+    overflow: hidden;
+  }
+  .skill-card::after {
+    content: '';
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    height: 0;
+    background: linear-gradient(135deg, rgba(0,245,255,0.05), rgba(191,0,255,0.05));
+    transition: height 0.4s;
+  }
+  .skill-card:hover { border-color: var(--cyan); transform: translateY(-8px); box-shadow: 0 25px 50px rgba(0,245,255,0.1); }
+  .skill-card:hover::after { height: 100%; }
+
+  .skill-icon {
+    font-size: 2.2rem;
+    margin-bottom: 15px;
+  }
+  .skill-name {
+    font-family: 'Orbitron', monospace;
+    font-size: 0.9rem;
+    color: var(--cyan);
+    letter-spacing: 2px;
+    margin-bottom: 12px;
+  }
+  .skill-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  .skill-tag {
+    background: rgba(0,245,255,0.08);
+    border: 1px solid rgba(0,245,255,0.2);
+    color: #7ab8c8;
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 0.78rem;
+    letter-spacing: 1px;
+    font-family: 'Share Tech Mono', monospace;
+  }
+
+  /* PROJECTS */
+  .projects-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+    gap: 28px;
+  }
+
+  .project-card {
+    background: var(--glass);
+    border: 1px solid var(--glass-border);
+    border-radius: 12px;
+    padding: 32px;
+    transition: all 0.4s;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .project-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0;
+    width: 4px; height: 100%;
+    background: linear-gradient(to bottom, var(--cyan), var(--purple));
+    transform: scaleY(0);
+    transform-origin: top;
+    transition: transform 0.4s;
+  }
+  .project-card:hover::before { transform: scaleY(1); }
+  .project-card:hover {
+    border-color: rgba(0,245,255,0.4);
+    transform: translateY(-8px);
+    box-shadow: 0 30px 60px rgba(0,245,255,0.1);
+    padding-left: 36px;
+  }
+
+  .project-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 16px;
+  }
+
+  .project-icon { font-size: 2rem; }
+
+  .project-risk {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 0.7rem;
+    letter-spacing: 2px;
+    padding: 4px 12px;
+    border-radius: 20px;
+  }
+  .risk-high { background: rgba(255,0,60,0.15); color: var(--red); border: 1px solid rgba(255,0,60,0.3); }
+  .risk-med { background: rgba(255,107,0,0.15); color: var(--orange); border: 1px solid rgba(255,107,0,0.3); }
+
+  .project-title {
+    font-family: 'Orbitron', monospace;
+    font-size: 1rem;
+    color: #fff;
+    margin-bottom: 12px;
+    font-weight: 700;
+  }
+
+  .project-desc {
+    color: #6a9aaa;
+    font-size: 0.95rem;
+    line-height: 1.7;
+    margin-bottom: 20px;
+  }
+
+  .project-tools {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 20px;
+  }
+
+  .project-tool {
+    background: rgba(0,255,136,0.08);
+    border: 1px solid rgba(0,255,136,0.2);
+    color: var(--green);
+    padding: 3px 10px;
+    border-radius: 4px;
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 0.75rem;
+  }
+
+  .project-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    color: var(--cyan);
+    text-decoration: none;
+    font-size: 0.85rem;
+    letter-spacing: 2px;
+    font-weight: 600;
+    transition: gap 0.3s;
+  }
+  .project-link:hover { gap: 14px; }
+
+  /* CERTS */
+  .certs-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 24px;
+  }
+
+  .cert-card {
+    background: var(--glass);
+    border: 1px solid var(--glass-border);
+    border-radius: 12px;
+    padding: 28px;
+    display: flex;
+    gap: 20px;
+    align-items: flex-start;
+    transition: all 0.3s;
+  }
+  .cert-card:hover {
+    border-color: var(--green);
+    transform: translateX(8px);
+    box-shadow: -8px 0 30px rgba(0,255,136,0.1);
+  }
+
+  .cert-icon {
+    width: 50px; height: 50px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    flex-shrink: 0;
+    background: linear-gradient(135deg, rgba(0,255,136,0.15), rgba(0,245,255,0.15));
+    border: 1px solid rgba(0,255,136,0.3);
+  }
+
+  .cert-name {
+    font-family: 'Orbitron', monospace;
+    font-size: 0.9rem;
+    color: #fff;
+    margin-bottom: 6px;
+    font-weight: 700;
+  }
+  .cert-org { color: var(--green); font-size: 0.85rem; margin-bottom: 6px; }
+  .cert-status {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 0.75rem;
+    color: #456070;
+    letter-spacing: 1px;
+  }
+
+  /* CONTACT */
+  .contact-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 60px;
+    align-items: center;
+  }
+
+  .contact-text h3 {
+    font-family: 'Orbitron', monospace;
+    font-size: 1.5rem;
+    color: #fff;
+    margin-bottom: 16px;
+  }
+  .contact-text p {
+    color: #6a9aaa;
+    line-height: 1.8;
+    margin-bottom: 30px;
+  }
+
+  .contact-links {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  .contact-link {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 16px 24px;
+    background: var(--glass);
+    border: 1px solid var(--glass-border);
+    border-radius: 8px;
+    text-decoration: none;
+    transition: all 0.3s;
+    color: #8ab0c0;
+  }
+  .contact-link:hover {
+    border-color: var(--cyan);
+    color: var(--cyan);
+    transform: translateX(8px);
+    box-shadow: -5px 0 20px rgba(0,245,255,0.1);
+  }
+
+  .contact-link-icon { font-size: 1.3rem; }
+  .contact-link-text { font-size: 0.9rem; letter-spacing: 1px; }
+
+  /* TERMINAL WIDGET */
+  .terminal {
+    background: #010a06;
+    border: 1px solid rgba(0,255,136,0.2);
+    border-radius: 12px;
+    overflow: hidden;
+    font-family: 'Share Tech Mono', monospace;
+  }
+
+  .terminal-bar {
+    background: rgba(0,255,136,0.05);
+    padding: 12px 20px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    border-bottom: 1px solid rgba(0,255,136,0.1);
+  }
+
+  .t-dot {
+    width: 12px; height: 12px;
+    border-radius: 50%;
+  }
+  .t-red { background: #ff5f57; }
+  .t-yellow { background: #ffbd2e; }
+  .t-green { background: #28c840; }
+
+  .terminal-title {
+    flex: 1;
+    text-align: center;
+    font-size: 0.75rem;
+    color: #345048;
+    letter-spacing: 2px;
+  }
+
+  .terminal-body {
+    padding: 24px;
+    font-size: 0.85rem;
+    line-height: 2;
+  }
+
+  .t-line { display: block; }
+  .t-prompt { color: var(--green); }
+  .t-cmd { color: var(--cyan); }
+  .t-output { color: #5a9a7a; padding-left: 20px; }
+  .t-highlight { color: var(--orange); }
+
+  .cursor-blink {
+    display: inline-block;
+    width: 8px; height: 16px;
+    background: var(--green);
+    animation: blink 1s step-end infinite;
+    vertical-align: middle;
+  }
+
+  /* FOOTER */
+  footer {
+    text-align: center;
+    padding: 40px;
+    border-top: 1px solid var(--glass-border);
+    position: relative;
+    z-index: 1;
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 0.8rem;
+    color: #2a4858;
+    letter-spacing: 2px;
+  }
+
+  footer span { color: var(--cyan); }
+
+  /* ANIMATIONS */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(30px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+  @keyframes scrollPulse {
+    0%, 100% { opacity: 1; transform: scaleY(1); }
+    50% { opacity: 0.3; transform: scaleY(0.5); }
+  }
+  @keyframes blink {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0; }
+  }
+  @keyframes glitch {
+    0%, 100% { clip-path: inset(0 0 100% 0); }
+    10% { clip-path: inset(20% 0 60% 0); transform: translate(-4px, 0); }
+    20% { clip-path: inset(60% 0 20% 0); transform: translate(4px, 0); }
+    30% { clip-path: inset(0 0 0 0); transform: translate(0, 0); }
+  }
+  @keyframes scanline {
+    0% { top: -100%; }
+    100% { top: 200%; }
+  }
+  @keyframes pulse-ring {
+    0% { transform: scale(0.8); opacity: 1; }
+    100% { transform: scale(2); opacity: 0; }
+  }
+
+  /* REVEAL ON SCROLL */
+  .reveal {
+    opacity: 0;
+    transform: translateY(40px);
+    transition: all 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  }
+  .reveal.visible { opacity: 1; transform: translateY(0); }
+
+  /* SCANLINE EFFECT */
+  .hero::after {
+    content: '';
+    position: absolute;
+    left: 0; right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, var(--cyan), transparent);
+    opacity: 0.3;
+    animation: scanline 4s linear infinite;
+    pointer-events: none;
+  }
+
+  /* RESPONSIVE */
+  @media (max-width: 768px) {
+    nav { padding: 16px 20px; }
+    .nav-links { display: none; }
+    section { padding: 60px 20px; }
+    .about-grid { grid-template-columns: 1fr; gap: 40px; }
+    .contact-grid { grid-template-columns: 1fr; gap: 40px; }
+    .hero { padding: 0 20px; }
+    .hero-title { font-size: 0.9rem; letter-spacing: 2px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- CURSOR -->
+<div class="cursor" id="cursor"></div>
+<div class="cursor-dot" id="cursorDot"></div>
+
+<!-- MATRIX CANVAS -->
+<canvas id="matrix-canvas"></canvas>
+<div class="grid-overlay"></div>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-logo">DP://SEC</div>
+  <div class="nav-links">
+    <a href="#about">About</a>
+    <a href="#skills">Skills</a>
+    <a href="#projects">Projects</a>
+    <a href="#certs">Certs</a>
+    <a href="#contact">Contact</a>
+  </div>
+</nav>
+
+<!-- HERO -->
+<div class="hero" id="home">
+  <div class="hero-content">
+    <div class="hero-tag">&gt;_ INITIALIZING PORTFOLIO...</div>
+    <div class="hero-name">
+      <span class="first">DHVANIT </span><span class="last">PARIKH</span>
+    </div>
+    <div class="hero-title">
+      Network Engineer <span>|</span> Cybersecurity Professional <span>|</span> CEH v13
+    </div>
+    <div class="hero-badge">✓ CEH v13 CERTIFIED &nbsp;|&nbsp; OPEN TO INTERNSHIPS</div>
+    <div class="hero-btns">
+      <a href="#projects" class="btn-primary">View Projects</a>
+      <a href="#contact" class="btn-secondary">Contact Me</a>
+    </div>
+  </div>
+  <div class="scroll-indicator">
+    <span>SCROLL</span>
+    <div class="scroll-line"></div>
+  </div>
+</div>
+
+<!-- ABOUT -->
+<section id="about">
+  <div class="section-header reveal">
+    <div class="section-num">01</div>
+    <h2 class="section-title">About <span class="accent">Me</span></h2>
+    <div class="section-line"></div>
+  </div>
+  <div class="about-grid">
+    <div class="about-text reveal">
+      <p>I'm a <strong>third-year B.Tech Computer Science student</strong> at Gandhinagar Institute of Technology who got genuinely hooked on cybersecurity after setting up my first home lab.</p>
+      <p>Since then I've been learning <strong>hands-on</strong> — running Nmap scans, capturing packets in Wireshark, testing web apps with Burp Suite, and building out an Active Directory environment from scratch.</p>
+      <p>I cleared my <strong>CEH v13 theory exam</strong> and appeared for the practical. I'm the kind of person who learns by doing, breaks things on purpose to understand them, and then <strong>documents everything.</strong></p>
+      <p>Looking for an internship or entry-level role in <strong>network security, cybersecurity operations, or SOC.</strong></p>
+    </div>
+    <div class="about-stats reveal">
+      <div class="stat-card">
+        <div class="stat-num">3+</div>
+        <div class="stat-label">Lab Projects</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-num">CEH</div>
+        <div class="stat-label">v13 Certified</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-num">7+</div>
+        <div class="stat-label">Security Tools</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-num">SOC</div>
+        <div class="stat-label">Focused Role</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SKILLS -->
+<section id="skills">
+  <div class="section-header reveal">
+    <div class="section-num">02</div>
+    <h2 class="section-title">Technical <span class="accent">Skills</span></h2>
+    <div class="section-line"></div>
+  </div>
+  <div class="skills-grid">
+    <div class="skill-card reveal">
+      <div class="skill-icon">🌐</div>
+      <div class="skill-name">NETWORKING</div>
+      <div class="skill-tags">
+        <span class="skill-tag">TCP/IP</span>
+        <span class="skill-tag">OSI Model</span>
+        <span class="skill-tag">DNS</span>
+        <span class="skill-tag">DHCP</span>
+        <span class="skill-tag">VPN</span>
+        <span class="skill-tag">Subnetting</span>
+        <span class="skill-tag">Firewall</span>
+        <span class="skill-tag">LAN/WAN</span>
+      </div>
+    </div>
+    <div class="skill-card reveal">
+      <div class="skill-icon">🔐</div>
+      <div class="skill-name">SECURITY TOOLS</div>
+      <div class="skill-tags">
+        <span class="skill-tag">Nmap</span>
+        <span class="skill-tag">Wireshark</span>
+        <span class="skill-tag">Burp Suite</span>
+        <span class="skill-tag">John the Ripper</span>
+        <span class="skill-tag">Metasploit</span>
+        <span class="skill-tag">Kali Linux</span>
+      </div>
+    </div>
+    <div class="skill-card reveal">
+      <div class="skill-icon">🖥️</div>
+      <div class="skill-name">SERVER ADMIN</div>
+      <div class="skill-tags">
+        <span class="skill-tag">Windows Server</span>
+        <span class="skill-tag">Active Directory</span>
+        <span class="skill-tag">GPO</span>
+        <span class="skill-tag">RBAC</span>
+        <span class="skill-tag">DNS Integration</span>
+      </div>
+    </div>
+    <div class="skill-card reveal">
+      <div class="skill-icon">🐧</div>
+      <div class="skill-name">LINUX</div>
+      <div class="skill-tags">
+        <span class="skill-tag">Kali Linux</span>
+        <span class="skill-tag">Ubuntu</span>
+        <span class="skill-tag">Bash Scripting</span>
+        <span class="skill-tag">CLI</span>
+        <span class="skill-tag">Sysadmin</span>
+      </div>
+    </div>
+    <div class="skill-card reveal">
+      <div class="skill-icon">🔍</div>
+      <div class="skill-name">CYBERSECURITY</div>
+      <div class="skill-tags">
+        <span class="skill-tag">Ethical Hacking</span>
+        <span class="skill-tag">VAPT</span>
+        <span class="skill-tag">OWASP Top 10</span>
+        <span class="skill-tag">Threat Analysis</span>
+        <span class="skill-tag">Incident Response</span>
+      </div>
+    </div>
+    <div class="skill-card reveal">
+      <div class="skill-icon">⚙️</div>
+      <div class="skill-name">HARDWARE</div>
+      <div class="skill-tags">
+        <span class="skill-tag">PC Assembly</span>
+        <span class="skill-tag">Troubleshooting</span>
+        <span class="skill-tag">Maintenance</span>
+        <span class="skill-tag">Diagnostics</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PROJECTS -->
+<section id="projects">
+  <div class="section-header reveal">
+    <div class="section-num">03</div>
+    <h2 class="section-title">Lab <span class="accent">Projects</span></h2>
+    <div class="section-line"></div>
+  </div>
+  <div class="projects-grid">
+    <div class="project-card reveal">
+      <div class="project-top">
+        <div class="project-icon">🔬</div>
+        <span class="project-risk risk-high">HIGH IMPACT</span>
+      </div>
+      <div class="project-title">Cybersecurity Home Lab</div>
+      <div class="project-desc">Built an isolated multi-VM lab on VirtualBox with Kali Linux and Windows Server to practise real-world penetration testing and defence scenarios.</div>
+      <div class="project-tools">
+        <span class="project-tool">Nmap</span>
+        <span class="project-tool">Wireshark</span>
+        <span class="project-tool">Burp Suite</span>
+        <span class="project-tool">Kali Linux</span>
+      </div>
+      <a href="https://github.com/dhvanit-sec/Cybersecurity-home-lab" target="_blank" class="project-link">View on GitHub →</a>
+    </div>
+
+    <div class="project-card reveal">
+      <div class="project-top">
+        <div class="project-icon">🖥️</div>
+        <span class="project-risk risk-med">ENTERPRISE SIM</span>
+      </div>
+      <div class="project-title">Windows Server AD Lab</div>
+      <div class="project-desc">Set up a domain environment with Active Directory, DNS, HR & Admin OUs, and Group Policy Objects — including password policy, firewall, and Recycle Bin GPOs.</div>
+      <div class="project-tools">
+        <span class="project-tool">Windows Server 2019</span>
+        <span class="project-tool">Active Directory</span>
+        <span class="project-tool">GPO</span>
+      </div>
+      <a href="https://github.com/dhvanit-sec/Windows-Server-AD-Lab" target="_blank" class="project-link">View on GitHub →</a>
+    </div>
+
+    <div class="project-card reveal">
+      <div class="project-top">
+        <div class="project-icon">🔍</div>
+        <span class="project-risk risk-high">VAPT REPORT</span>
+      </div>
+      <div class="project-title">Network Vulnerability Assessment</div>
+      <div class="project-desc">Performed a full VAPT on isolated lab network (192.168.56.0/24) — identified 7 vulnerabilities across 3 hosts with risk ratings and remediation recommendations.</div>
+      <div class="project-tools">
+        <span class="project-tool">Nmap</span>
+        <span class="project-tool">Wireshark</span>
+        <span class="project-tool">VAPT</span>
+      </div>
+      <a href="https://github.com/dhvanit-sec/Network-Vulnerability-Assessment" target="_blank" class="project-link">View on GitHub →</a>
+    </div>
+  </div>
+</section>
+
+<!-- CERTS -->
+<section id="certs">
+  <div class="section-header reveal">
+    <div class="section-num">04</div>
+    <h2 class="section-title">Certifi<span class="accent">cations</span></h2>
+    <div class="section-line"></div>
+  </div>
+  <div class="certs-grid">
+    <div class="cert-card reveal">
+      <div class="cert-icon">🏆</div>
+      <div>
+        <div class="cert-name">CEH v13</div>
+        <div class="cert-org">EC-Council — Certified Ethical Hacker</div>
+        <div class="cert-status">✓ THEORY CERTIFIED &nbsp;|&nbsp; PRACTICAL APPEARED &nbsp;|&nbsp; 2026</div>
+      </div>
+    </div>
+    <div class="cert-card reveal">
+      <div class="cert-icon">🎓</div>
+      <div>
+        <div class="cert-name">Cybersecurity Professional</div>
+        <div class="cert-org">Tops Technology — Training Program</div>
+        <div class="cert-status">⟳ IN PROGRESS &nbsp;|&nbsp; 2025 – 2026</div>
+      </div>
+    </div>
+    <div class="cert-card reveal">
+      <div class="cert-icon">🎓</div>
+      <div>
+        <div class="cert-name">B.Tech Computer Science</div>
+        <div class="cert-org">Gandhinagar Institute of Technology</div>
+        <div class="cert-status">⟳ IN PROGRESS &nbsp;|&nbsp; 2022 – PRESENT</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CONTACT -->
+<section id="contact">
+  <div class="section-header reveal">
+    <div class="section-num">05</div>
+    <h2 class="section-title">Get In <span class="accent">Touch</span></h2>
+    <div class="section-line"></div>
+  </div>
+  <div class="contact-grid">
+    <div class="contact-text reveal">
+      <h3>Let's Connect</h3>
+      <p>I'm actively looking for internship and entry-level opportunities in network security, cybersecurity operations, and SOC roles. Feel free to reach out!</p>
+      <div class="contact-links">
+        <a href="mailto:parikhdhvanit@gmail.com" class="contact-link">
+          <span class="contact-link-icon">📧</span>
+          <span class="contact-link-text">parikhdhvanit@gmail.com</span>
+        </a>
+        <a href="https://www.linkedin.com/in/dhvanit-parikh-48155040a" target="_blank" class="contact-link">
+          <span class="contact-link-icon">💼</span>
+          <span class="contact-link-text">linkedin.com/in/dhvanit-parikh</span>
+        </a>
+        <a href="https://github.com/dhvanit-sec" target="_blank" class="contact-link">
+          <span class="contact-link-icon">🐙</span>
+          <span class="contact-link-text">github.com/dhvanit-sec</span>
+        </a>
+        <a href="tel:+917490811649" class="contact-link">
+          <span class="contact-link-icon">📱</span>
+          <span class="contact-link-text">+91 7490811649</span>
+        </a>
+      </div>
+    </div>
+    <div class="terminal reveal">
+      <div class="terminal-bar">
+        <div class="t-dot t-red"></div>
+        <div class="t-dot t-yellow"></div>
+        <div class="t-dot t-green"></div>
+        <div class="terminal-title">dhvanit@kali:~</div>
+      </div>
+      <div class="terminal-body">
+        <span class="t-line"><span class="t-prompt">dhvanit@kali:~$ </span><span class="t-cmd">whoami</span></span>
+        <span class="t-line t-output">Dhvanit Parikh — Network Engineer & Cybersecurity Enthusiast</span>
+        <br>
+        <span class="t-line"><span class="t-prompt">dhvanit@kali:~$ </span><span class="t-cmd">cat skills.txt</span></span>
+        <span class="t-line t-output">Nmap | Wireshark | Burp Suite | Kali Linux</span>
+        <span class="t-line t-output">Active Directory | Windows Server | GPO | RBAC</span>
+        <br>
+        <span class="t-line"><span class="t-prompt">dhvanit@kali:~$ </span><span class="t-cmd">cat certs.txt</span></span>
+        <span class="t-line t-output"><span class="t-highlight">[✓]</span> CEH v13 — Theory Certified</span>
+        <span class="t-line t-output"><span class="t-highlight">[⟳]</span> Cybersecurity Training — In Progress</span>
+        <br>
+        <span class="t-line"><span class="t-prompt">dhvanit@kali:~$ </span><span class="t-cmd">cat status.txt</span></span>
+        <span class="t-line t-output" style="color: var(--green);">[OPEN TO WORK] Seeking internship/entry-level role</span>
+        <br>
+        <span class="t-line"><span class="t-prompt">dhvanit@kali:~$ </span><span class="cursor-blink"></span></span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <p>DESIGNED & BUILT BY <span>DHVANIT PARIKH</span> &nbsp;|&nbsp; 2026 &nbsp;|&nbsp; <span>github.com/dhvanit-sec</span></p>
+</footer>
+
+<script>
+// CURSOR
+const cursor = document.getElementById('cursor');
+const cursorDot = document.getElementById('cursorDot');
+document.addEventListener('mousemove', e => {
+  cursor.style.left = e.clientX - 10 + 'px';
+  cursor.style.top = e.clientY - 10 + 'px';
+  cursorDot.style.left = e.clientX - 3 + 'px';
+  cursorDot.style.top = e.clientY - 3 + 'px';
+});
+document.querySelectorAll('a, button').forEach(el => {
+  el.addEventListener('mouseenter', () => cursor.classList.add('hover'));
+  el.addEventListener('mouseleave', () => cursor.classList.remove('hover'));
+});
+
+// MATRIX RAIN
+const canvas = document.getElementById('matrix-canvas');
+const ctx = canvas.getContext('2d');
+canvas.width = window.innerWidth;
+canvas.height = window.innerHeight;
+const chars = 'アイウエオカキクケコNMAPWIRESHARKBURPSUITE01';
+const fontSize = 14;
+const cols = Math.floor(canvas.width / fontSize);
+const drops = Array(cols).fill(1);
+function drawMatrix() {
+  ctx.fillStyle = 'rgba(2,8,18,0.05)';
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+  ctx.fillStyle = '#00ff88';
+  ctx.font = fontSize + 'px Share Tech Mono';
+  drops.forEach((y, i) => {
+    const char = chars[Math.floor(Math.random() * chars.length)];
+    ctx.fillText(char, i * fontSize, y * fontSize);
+    if (y * fontSize > canvas.height && Math.random() > 0.975) drops[i] = 0;
+    drops[i]++;
+  });
+}
+setInterval(drawMatrix, 60);
+window.addEventListener('resize', () => {
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+});
+
+// SCROLL REVEAL
+const reveals = document.querySelectorAll('.reveal');
+const observer = new IntersectionObserver(entries => {
+  entries.forEach((entry, i) => {
+    if (entry.isIntersecting) {
+      setTimeout(() => entry.target.classList.add('visible'), i * 80);
+    }
+  });
+}, { threshold: 0.1 });
+reveals.forEach(el => observer.observe(el));
+
+// SMOOTH SCROLL
+document.querySelectorAll('a[href^="#"]').forEach(a => {
+  a.addEventListener('click', e => {
+    e.preventDefault();
+    const target = document.querySelector(a.getAttribute('href'));
+    if (target) target.scrollIntoView({ behavior: 'smooth' });
+  });
+});
+</script>
+</body>
+</html>
